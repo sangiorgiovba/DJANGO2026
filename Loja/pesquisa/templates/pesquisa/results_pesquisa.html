@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resultados da pesquisa de produtos{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2 class="mb-4 text-body">
+        Resultados para "{{ query }}"
+    </h2>
+
+    {% if lista_produtos %}
+
+    <div class="row">
+
+        {% for produto in lista_produtos %}
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card h-100 shadow-sm">
+
+                <a href="{% url 'catalogo_produtos:detalhes' produto.id %}"
+                   class="text-decoration-none text-body">
+
+                    <img src="{% static 'img/produtos/'|add:produto.imagen %}"
+                         class="card-img-top"
+                         alt="{{ produto.nome }}">
+
+                    <div class="card-body text-start">
+
+                        <h5 class="card-title">
+                            {{ produto.nome }}
+                        </h5>
+
+                        <p class="card-text">
+                            {{ produto.detalhes }}
+                        </p>
+
+                        <p class="card-text fw-bold">
+                            R$ {{ produto.preco }}
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- Paginação -->
+
+    <nav aria-label="Page navigation" class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+            {% if lista_produtos.has_previous %}
+
+            <li class="page-item">
+                <a class="page-link"
+                   href="?q={{ query }}&page={{ lista_produtos.previous_page_number }}">
+                    Anterior
+                </a>
+            </li>
+
+            {% else %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+            </li>
+
+            {% endif %}
+
+
+            {% for num in lista_produtos.paginator.page_range %}
+
+                {% if lista_produtos.number == num %}
+
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+
+                {% else %}
+
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?q={{ query }}&page={{ num }}">
+                        {{ num }}
+                    </a>
+                </li>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+            {% if lista_produtos.has_next %}
+
+            <li class="page-item">
+                <a class="page-link"
+                   href="?q={{ query }}&page={{ lista_produtos.next_page_number }}">
+                    Próxima
+                </a>
+            </li>
+
+            {% else %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Próxima</span>
+            </li>
+
+            {% endif %}
+
+        </ul>
+
+    </nav>
+
+    {% else %}
+
+    <p class="text-center mt-4 text-body">
+        Não foi encontrado nenhum resultado da pesquisa.
+    </p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
