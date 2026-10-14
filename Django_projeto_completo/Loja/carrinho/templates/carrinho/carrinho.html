@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Seu Carrinho{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ======================================== TABELA DO CARRINHO ======================================== */
+    .carrinho-table {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #2a9d8f !important;
+    }
+
+    /* CABEÇALHO */
+    .carrinho-table thead th {
+        background-color: #2a9d8f !important;
+        color: #ffffff !important;
+        border-color: #238477 !important;
+        padding: 14px 10px;
+        font-weight: 600;
+    }
+
+    /* CORPO DA TABELA */
+    .carrinho-table tbody td {
+        background-color: #f4a261 !important;
+        color: #2b2b2b !important;
+        border-color: rgba(80, 50, 30, 0.20) !important;
+        padding: 12px 10px;
+    }
+
+    /* LINHAS */
+    .carrinho-table tbody tr {
+        background-color: #f4a261 !important;
+    }
+
+    /* EFEITO AO PASSAR O MOUSE */
+    .carrinho-table tbody tr:hover td {
+        background-color: #e88f50 !important;
+        color: #1f1f1f !important;
+    }
+
+    /* ======================================== MODO ESCURO ======================================== */
+    [data-bs-theme="dark"] .carrinho-table {
+        border-color: #2a9d8f !important;
+    }
+
+    [data-bs-theme="dark"] .carrinho-table thead th {
+        background-color: #247f73 !important;
+        color: #ffffff !important;
+        border-color: #1d665d !important;
+    }
+
+    [data-bs-theme="dark"] .carrinho-table tbody td {
+        background-color: #d9824b !important;
+        color: #ffffff !important;
+        border-color: rgba(255, 255, 255, 0.20) !important;
+    }
+
+    [data-bs-theme="dark"] .carrinho-table tbody tr {
+        background-color: #d9824b !important;
+    }
+
+    [data-bs-theme="dark"] .carrinho-table tbody tr:hover td {
+        background-color: #c8733e !important;
+        color: #ffffff !important;
+    }
+
+    /* IMAGENS */
+    .carrinho-thumb {
+        border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* ======================================== CELULAR ======================================== */
+    @media (max-width: 768px) {
+        .carrinho-table thead {
+            display: none;
+        }
+
+        .carrinho-table tbody tr {
+            display: block;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .carrinho-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: right !important;
+        }
+
+        .carrinho-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 700;
+            margin-right: 15px;
+        }
+
+        .carrinho-table tbody td:first-child {
+            justify-content: flex-start;
+            text-align: left !important;
+        }
+
+        .carrinho-table tbody td:first-child::before {
+            display: none;
+        }
+    }
+</style>
+
+
+
+<div class="container py-5 text-body">
+    <h1 class="mb-4 text-start fw-bold">
+        <i class="fas fa-shopping-cart me-2"></i>
+        Seu Carrinho
+    </h1>
+
+    {% if items %}
+
+    <div class="table-responsive rounded-3 mb-4 carrito-table-wrap">
+
+        <table class="table table-sm align-middle shadow-sm mb-0 carrinho-table">
+
+            <thead>
+                <tr>
+                    <th scope="col">Produto</th>
+                    <th scope="col" class="text-center">Detalhes</th>
+                    <th scope="col" class="text-center">Preço</th>
+                    <th scope="col" class="text-center">Quantidade</th>
+                    <th scope="col" class="text-center">Sub_total</th>
+                    <th scope="col" class="text-center">Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in items %}
+
+                <tr class="carrinho-row">
+
+                    <td data-label="Produto" class="d-flex align-items-center gap-3 text-start">
+
+                        <img src="{% static 'img/produtos/' %}{{ item.produto.imagen }}" alt="{{ item.produto.nome }}"
+                            class="rounded shadow-sm carrinho-thumb" style="width:70px; height:70px; object-fit:cover;">
+
+                        <span class="fw-semibold">
+                            {{ item.produto.nome }}
+                        </span>
+
+                    </td>
+
+                    <td data-label="Detalhes" class="text-center">
+                        {{ item.produto.detalhes }}
+                    </td>
+
+                    <td data-label="Preço" class="text-center">
+                        R$ {{ item.produto.preco }}
+                    </td>
+
+                    <td data-label="Quantidade" class="text-center">
+                        {{ item.quantidade }}
+                    </td>
+
+                    <td data-label="Sub_total" class="text-center fw-semibold">
+                        R$ {{ item.subtotal }}
+                    </td>
+
+                    <td data-label="Ações" class="text-center">
+
+                        <a href="{% url 'carrinho:deletar' item.produto.id %}"
+                            class="btn btn-sm btn-outline-danger shadow-sm rounded-pill">
+
+                            <i class="fas fa-trash"></i>
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4 p-3 bg-body-secondary rounded-3 shadow-sm main-cart-card">
+
+        <h4 class="fw-bold text-success mb-0">
+            Total: R$ {{ total }}
+        </h4>
+
+        <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-2">
+
+            <a href="{% url 'carrinho:limpar' %}" class="btn btn-outline-danger rounded-pill px-3">
+
+                <i class="fas fa-trash-alt me-2"></i>
+                Limpar Carrinho
+
+            </a>
+
+            <a href="#" class="btn btn-success rounded-pill px-3">
+
+                <i class="fas fa-credit-card me-2"></i>
+                Concluir Compra
+
+            </a>
+
+            <a href="{% url 'catalogo_produtos:lista_produtos' %}" class="btn btn-outline-secondary rounded-pill px-3">
+
+                <i class="fas fa-arrow-left me-2"></i>
+                Voltar
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+    <div class="alert alert-info bg-body-secondary text-body py-5 text-center shadow-sm border rounded-3">
+
+        <h4 class="mb-3">
+            <i class="fas fa-info-circle me-2"></i>
+            Carrinho vazio
+        </h4>
+
+        <a href="{% url 'catalogo_produtos:lista_produtos' %}" class="btn btn-primary rounded-pill mt-2">
+
+            <i class="fas fa-gamepad me-2"></i>
+            Continuar Comprando
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
